@@ -9,11 +9,6 @@ const Pacient = db.define(
             type: DataTypes.INTEGER,
             primaryKey: true,
             autoIncrement: true
-        },
-
-        medicalRecord: {
-            type: DataTypes.TEXT,
-            allowNull: true
         }
     }
 );

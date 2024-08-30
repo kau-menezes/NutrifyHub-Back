@@ -37,6 +37,4 @@ const Diet = db.define(
     }
 );
 
-
-
 export default Diet;
