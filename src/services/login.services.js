@@ -1,7 +1,7 @@
 import { where } from "sequelize";
-import User from "../models/user.model";
+import User from "../models/user.model.js";
 import crypt from "bcryptjs"
-import AppError from "../AppError";
+import AppError from "../AppError.js";
 
 export async function loginVerifyService(req, res) {
 
