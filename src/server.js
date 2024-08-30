@@ -9,7 +9,7 @@ import "./models/ingredient.model.js";
 import "./models/steps.model.js";
 import "./models/diet.model.js";
 import "./models/nutricionist.model.js";
-import "./models/baseRecipe.model.js";
+import "./models/dietRecipe.model.js";
 import "./models/pacient.model.js";
 import "./models/associations.js";
 

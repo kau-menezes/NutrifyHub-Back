@@ -10,6 +10,7 @@ export async function createNutri(req, res) {
     })
 
     user.password = undefined;
+    
     if (user) return res.status(200).json(user);
 
 }

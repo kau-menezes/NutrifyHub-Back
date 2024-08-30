@@ -5,62 +5,8 @@ import Pacient from "./pacient.model.js";
 import RecipeSteps from "./steps.model.js";
 import User from "./user.model.js";
 import Recipe from "./recipe.model.js";
-import BaseRecipe from "./baseRecipe.model.js";
+import DietRecipe from "./dietRecipe.model.js";
 
-// User.hasOne(Pacient, {
-//     foreignKey: {
-//         name: "userID",
-//         allowNull: true,
-//     }
-// })
-
-// User.hasOne(Nutricionist, {
-//     foreignKey: {
-//         name: "userID",
-//         allowNull: true,
-//     }
-// })
-
-// Diet.hasOne(Pacient, {
-//     foreignKey: {
-//         name: "dietID", 
-//         allowNull: true
-//     }
-// })
-
-
-// Nutricionist.hasMany(Diet, {
-//     foreignKey: {
-//         name: "nutricionistID",
-//         allowNull: false,
-//     }
-// })
-
-// Recipe.hasMany(RecipeSteps, {
-//     foreignKey: {
-//         name: "recipeID", 
-//         allowNull: false
-//     }
-// })
-
-// Recipe.hasMany(RecipeIngredient, {
-//     foreignKey: {
-//         name: "recipeID", 
-//         allowNull: false
-//     }
-// })
-
-// Diet.belongsToMany(Recipe, {
-//     through: BaseRecipe,
-//     foreignKey: 'dietID',
-//     otherKey: 'recipeID'
-// });
-
-// Recipe.belongsToMany(Diet, {
-//     through: BaseRecipe,
-//     foreignKey: 'recipeID',
-//     otherKey: 'dietID'
-// });
 
 User.hasOne(Pacient, {
     foreignKey: {
@@ -110,16 +56,16 @@ Recipe.hasMany(RecipeIngredient, {
     onDelete: 'CASCADE'
 });
 
-Diet.belongsToMany(BaseRecipe, {
-    through: Recipe,
+Diet.belongsToMany(Recipe, {
+    through: DietRecipe,
     foreignKey: 'dietID',
-    otherKey: 'baseRecipeID',
+    otherKey: 'recipeID',
     onDelete: 'CASCADE'
 });
 
-BaseRecipe.belongsToMany(Diet, {
-    through: Recipe,
-    foreignKey: 'baseRecipeID',
+Recipe.belongsToMany(Diet, {
+    through: DietRecipe,
+    foreignKey: 'recipeID',
     otherKey: 'dietID',
     onDelete: 'CASCADE'
 });

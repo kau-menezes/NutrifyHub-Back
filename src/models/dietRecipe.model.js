@@ -1,10 +1,10 @@
 import { DataTypes } from "sequelize";
 import db from "../db.js";
 
-const BaseRecipe = db.define(
-    "BaseRecipe",
+const DietRecipe = db.define(
+    "DietRecipe",
     {
-        BaseRecipeID: {
+        dietRecipe: {
             type: DataTypes.INTEGER, 
             autoIncrement: true,
             primaryKey: true
@@ -16,4 +16,4 @@ const BaseRecipe = db.define(
     }
 );
 
-export default BaseRecipe;
+export default DietRecipe;

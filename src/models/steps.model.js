@@ -4,7 +4,7 @@ import db from "../db.js";
 const RecipeSteps = db.define(
     "RecipeSteps",
     {
-        RecipeStepstID: {
+        recipeStepsID: {
             type: DataTypes.INTEGER,
             primaryKey: true,
             autoIncrement: true,
