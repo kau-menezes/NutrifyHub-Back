@@ -1,13 +1,38 @@
-import Nutricionist from "../models/nutricionist.model";
-import User from "../models/user.model";
+import Nutricionist from "../models/nutricionist.model.js";
+import User from "../models/user.model.js";
 
-export async function createNutri(req, res) {
+import crypt from "bcryptjs"
 
-    const user = await User.create({...req.body, CRN: undefined})
+export async function getNutri(req, res) {
+
+    if (res.locals.userType === 0) {
+        try {
+            const nutris = await Nutricionist.findAll();
+            res.json(nutris);
+        } catch (error) {
+            res.status(500).json({ error: 'Internal Server Error' });
+        }
+    } else {
+        res.status(403).json({ error: 'Forbidden' });
+    }
+
+}
+
+export async function insertNutri(req, res) {
+
+    const password = crypt.hashSync(req.body.password);
+
+    const user = await User.create({
+        name: req.body.name, 
+        email: req.body.email,
+        password: password,
+        userType: 1
+    });
+
     const nutri = await Nutricionist.create({
         userID: user.userID, 
         CRN: req.body.CRN
-    })
+    });
 
     user.password = undefined;
     
