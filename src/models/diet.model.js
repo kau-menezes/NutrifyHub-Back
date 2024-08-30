@@ -1,10 +1,6 @@
 import { DataTypes } from "sequelize";
 import db from "../db.js";
 
-import Pacient from "./pacient.model.js";
-import BaseRecipe from "./baseRecipe.model.js";
-import Nutricionist from "./nutricionist.model.js";
-
 const Diet = db.define(
     "Diet",
     {
@@ -41,19 +37,6 @@ const Diet = db.define(
     }
 );
 
-Diet.belongsTo(Pacient, {
-    foreignKey: 'pacientID',
-    as: 'pacient'
-});
 
-Diet.belongsTo(Nutricionist, {
-    foreignKey: 'nutricionistID',
-    as: 'nutricionist'
-});
-
-Diet.hasMany(BaseRecipe, {
-    foreignKey: 'dietID',
-    as: 'baseRecipes'
-});
 
 export default Diet;

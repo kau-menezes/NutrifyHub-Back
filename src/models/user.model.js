@@ -1,10 +1,6 @@
 import { DataTypes } from "sequelize";
 import db from "../db.js";
 
-import Nutricionist from "./nutricionist.model.js";
-import Recipe from "./recipe.model.js";
-import Pacient from "./pacient.model.js";
-
 const User = db.define(
     "User",
     {
@@ -41,19 +37,5 @@ const User = db.define(
     }
 );
 
-User.hasOne(Nutricionist, {
-    foreignKey: 'userID',
-    as: 'nutricionist'
-});
-
-User.hasOne(Pacient, {
-    foreignKey: 'userID',
-    as: 'pacient'
-});
-
-User.hasMany(Recipe, {
-    foreignKey: 'userID',
-    as: 'recepies'
-});
 
 export default User;
