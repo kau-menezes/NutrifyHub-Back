@@ -24,6 +24,22 @@ User.hasOne(Nutricionist, {
     onDelete: 'cascade'
 });
 
+// Recipe.hasOne(User, {
+//     foreignKey: {
+//         name: 'userID', 
+//         allowNull: false
+//     }, 
+//     onDelete: 'cascade'
+// })
+
+User.hasMany(Recipe, {
+    foreignKey: {
+        name: 'userID', 
+        allowNull: false
+    }, 
+    onDelete: 'cascade'
+})
+
 Nutricionist.hasOne(Pacient, {
     foreignKey: {
         name: 'nutricionistID',
@@ -64,16 +80,18 @@ Recipe.hasMany(RecipeIngredient, {
     onDelete: 'cascade'
 });
 
-Diet.belongsToMany(Recipe, {
-    through: DietRecipe,
-    foreignKey: 'dietID',
-    otherKey: 'recipeID',
-    onDelete: 'cascade'
-});
+Diet.hasMany(DietRecipe, {
+    foreignKey: {
+        name: 'dietID',
+        allowNull: false,
+    },
+    onDelete: 'cascade'   
+})
 
-Recipe.belongsToMany(Diet, {
-    through: DietRecipe,
-    foreignKey: 'recipeID',
-    otherKey: 'dietID',
-    onDelete: 'cascade'
-});
+Recipe.hasMany(DietRecipe, {
+    foreignKey: {
+        name: 'recipeID',
+        allowNull: false,
+    },
+    onDelete: 'cascade'   
+})

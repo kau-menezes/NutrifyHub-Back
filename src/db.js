@@ -14,7 +14,8 @@ if( !database || !username || !password || !port || !dialect ) throw new Error("
 const db = new Sequelize( database, username, password, {
     host: "localhost",
     port: Number(port),
-    dialect:  dialect
+    dialect:  dialect,
+    logging: console.log 
 })
 
 export default db;

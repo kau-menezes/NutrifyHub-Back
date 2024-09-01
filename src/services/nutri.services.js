@@ -1,6 +1,8 @@
 import AppError from "../AppError.js";
 import Pacient from "../models/pacient.model.js";
 import Nutricionist from "../models/nutricionist.model.js";
+import Diet from "../models/diet.model.js";
+import dietRecipe from "../models/dietRecipe.model.js";
 import User from "../models/user.model.js";
 
 import crypt from "bcryptjs"
@@ -16,17 +18,43 @@ export async function insertPacient(req, res) {
         userType: 2
     });
     
-    
-    
     const pacient = await Pacient.create({
         userID: user.userID, 
         nutricionistID: req.params.nutriID
     });
-    console.log("pimba: ", pacient);
 
     user.password = undefined;
     
-    if (user) return res.status(200).json(user);
+    if (user) return res.status(200).json({user, pacient});
+
+}
+
+export async function insertDiet(req, res) {
+
+    const diet = await Diet.create({
+        totalCalories: req.body.calories, 
+        waterIntake: req.body.water,
+        protein: req.body.protein,
+        carbs: req.body.carbs,
+        fat: req.body.fat,
+        nutricionistID: req.params.nutriID
+    });
+    
+    const pacient = await Pacient.findByPk(req.params.pacientID);
+
+    pacient.update({
+        dietID: diet.dietID,
+    });
+
+    req.body.recipes.forEach( async (recipe) => {
+        await dietRecipe.create({
+            period: recipe.period,
+            dietID: diet.dietID,
+            recipeID: recipe.recipeID
+        })
+    });
+
+    if (diet) return res.status(200).json({diet, pacient});
 
 }
 

@@ -1,6 +1,8 @@
 import { DataTypes } from "sequelize";
 import db from "../db.js";
 
+// colocar id na pk
+
 const DietRecipe = db.define(
     "DietRecipe",
     {
@@ -9,6 +11,7 @@ const DietRecipe = db.define(
             autoIncrement: true,
             primaryKey: true
         },
+        
         period: {
             type: DataTypes.STRING(50),
             allowNull: true
