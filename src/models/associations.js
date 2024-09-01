@@ -13,7 +13,7 @@ User.hasOne(Pacient, {
         name: 'userID',
         allowNull: true,
     },
-    onDelete: 'SET NULL' 
+    onDelete: 'cascade' 
 });
 
 User.hasOne(Nutricionist, {
@@ -21,7 +21,7 @@ User.hasOne(Nutricionist, {
         name: 'userID',
         allowNull: true,
     },
-    onDelete: 'SET NULL'
+    onDelete: 'cascade'
 });
 
 Diet.hasOne(Pacient, {
@@ -29,7 +29,7 @@ Diet.hasOne(Pacient, {
         name: 'dietID',
         allowNull: true,
     },
-    onDelete: 'SET NULL' 
+    onDelete: 'cascade' 
 });
 
 Nutricionist.hasMany(Diet, {
@@ -37,7 +37,7 @@ Nutricionist.hasMany(Diet, {
         name: 'nutricionistID',
         allowNull: false,
     },
-    onDelete: 'CASCADE'
+    onDelete: 'cascade'
 });
 
 Recipe.hasMany(RecipeSteps, {
@@ -45,7 +45,7 @@ Recipe.hasMany(RecipeSteps, {
         name: 'recipeID',
         allowNull: false,
     },
-    onDelete: 'CASCADE'
+    onDelete: 'cascade'
 });
 
 Recipe.hasMany(RecipeIngredient, {
@@ -53,19 +53,19 @@ Recipe.hasMany(RecipeIngredient, {
         name: 'recipeID',
         allowNull: false,
     },
-    onDelete: 'CASCADE'
+    onDelete: 'cascade'
 });
 
 Diet.belongsToMany(Recipe, {
     through: DietRecipe,
     foreignKey: 'dietID',
     otherKey: 'recipeID',
-    onDelete: 'CASCADE'
+    onDelete: 'cascade'
 });
 
 Recipe.belongsToMany(Diet, {
     through: DietRecipe,
     foreignKey: 'recipeID',
     otherKey: 'dietID',
-    onDelete: 'CASCADE'
+    onDelete: 'cascade'
 });

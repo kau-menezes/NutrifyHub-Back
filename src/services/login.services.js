@@ -17,7 +17,7 @@ export async function loginVerifyService(req, res) {
     res.status(200).json({
         token: Token.sign(
             { userID: user.userID, userType: user.userType },
-            "secret",
+            "secret-key",
             {  })
     })
 }
