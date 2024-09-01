@@ -24,6 +24,14 @@ User.hasOne(Nutricionist, {
     onDelete: 'cascade'
 });
 
+Nutricionist.hasOne(Pacient, {
+    foreignKey: {
+        name: 'nutricionistID',
+        allowNull: true,
+    },
+    onDelete: 'set null'
+})
+
 Diet.hasOne(Pacient, {
     foreignKey: {
         name: 'dietID',

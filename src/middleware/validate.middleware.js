@@ -8,11 +8,13 @@ export async function validateToken(req, res, next) {
 
     console.log("Validando token...")
     
-    const token = req.headers.authorization;
+    let token = req.headers.authorization;
 
     if (!token) {
         return next(new AppError('No token provided', 401));
     }
+
+    token = token.replace("Bearer ", "")
 
     verify(
         token, 
