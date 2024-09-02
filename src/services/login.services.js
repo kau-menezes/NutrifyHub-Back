@@ -18,7 +18,6 @@ export async function loginVerifyService(req, res) {
 
     // console.log(user);
     
-    
     let userInfo;
 
     switch (user.userType) {

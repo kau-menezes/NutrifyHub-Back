@@ -13,7 +13,7 @@ User.hasOne(Pacient, {
         name: 'userID',
         allowNull: true,
     },
-    onDelete: 'cascade' 
+    onDelete: 'set null' 
 });
 
 User.hasOne(Nutricionist, {
@@ -21,7 +21,7 @@ User.hasOne(Nutricionist, {
         name: 'userID',
         allowNull: true,
     },
-    onDelete: 'cascade'
+    onDelete: 'set null'
 });
 
 // Recipe.hasOne(User, {
@@ -35,9 +35,9 @@ User.hasOne(Nutricionist, {
 User.hasMany(Recipe, {
     foreignKey: {
         name: 'userID', 
-        allowNull: false
+        allowNull: true
     }, 
-    onDelete: 'cascade'
+    onDelete: 'set null'
 })
 
 Nutricionist.hasOne(Pacient, {
@@ -53,45 +53,45 @@ Diet.hasOne(Pacient, {
         name: 'dietID',
         allowNull: true,
     },
-    onDelete: 'cascade' 
+    onDelete: 'set null' 
 });
 
 Nutricionist.hasMany(Diet, {
     foreignKey: {
         name: 'nutricionistID',
-        allowNull: false,
+        allowNull: true,
     },
-    onDelete: 'cascade'
+    onDelete: 'set null'
 });
 
 Recipe.hasMany(RecipeSteps, {
     foreignKey: {
         name: 'recipeID',
-        allowNull: false,
+        allowNull: true,
     },
-    onDelete: 'cascade'
+    onDelete: 'set null'
 });
 
 Recipe.hasMany(RecipeIngredient, {
     foreignKey: {
         name: 'recipeID',
-        allowNull: false,
+        allowNull: true,
     },
-    onDelete: 'cascade'
+    onDelete: 'set null'
 });
 
 Diet.hasMany(DietRecipe, {
     foreignKey: {
         name: 'dietID',
-        allowNull: false,
+        allowNull: true,
     },
-    onDelete: 'cascade'   
+    onDelete: 'set null'   
 })
 
 Recipe.hasMany(DietRecipe, {
     foreignKey: {
         name: 'recipeID',
-        allowNull: false,
+        allowNull: true,
     },
-    onDelete: 'cascade'   
+    onDelete: 'set null'   
 })

@@ -29,21 +29,38 @@ async function build() {
 
     console.log("admin, admin@mail.com, admin123");
 
-    const password1 = crypt.hashSync("adri123")
+    const password1 = crypt.hashSync("neusa123")
 
-    const user = await User.create({
-        name: "Adriana Menezes",
-        email: "adri@mail.com",
+    await User.create({
+        name: "Neusa Saladino",
+        email: "neusa@mail.com",
         password: password1,
         userType: 1
     });
-
-    const nutri = await Nutricionist.create({
+    
+    await Nutricionist.create({
         userID: 2, 
-        CRN: "456"
+        CRN: "12345/SP"
+    });
+
+    console.log("Neusa Saladino, neusa@mail.com, neusa123");
+
+    const password2 = crypt.hashSync("adri123")
+
+    await User.create({
+        name: "Adriana Menezes",
+        email: "adri@mail.com",
+        password: password2,
+        userType: 1
+    });
+
+    await Nutricionist.create({
+        userID: 3, 
+        CRN: "67890/PR"
     });
 
     console.log("Adriana Menezes, adri@mail.com, adri123");
+
 }
 
 build();
