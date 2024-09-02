@@ -5,6 +5,9 @@ import Recipe from "../models/recipe.model.js";
 import User from "../models/user.model.js";
 
 export async function getDiet(req, res) {
+
+    console.log("\n\n\n\n\n\n\n\n", req.params.pacientID, "\n\n\n\n\n\n\n\n");
+    
     try {
         const pacient = await Pacient.findByPk(req.params.pacientID);
         
@@ -17,7 +20,7 @@ export async function getDiet(req, res) {
                 {
                     model: dietRecipe,
                     required: true,
-                    attributes: ['recipeID', 'dietID']
+                    attributes: ['recipeID', 'dietID','period']
                 }
             ],
             where: { dietID: pacient.dietID }

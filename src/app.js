@@ -17,6 +17,6 @@ app.use("/login", loginRouter);
 app.use("/admin", adminRouter);
 app.use("/nutri", nutriRouter);
 app.use("/user", userRouter);
-app.use("/paciente", pacientRouter);
+app.use("/pacient", pacientRouter);
 
 export default app; 
