@@ -15,7 +15,13 @@ export async function getDiet(req, res) {
             {
                 model: dietRecipe,
                 required: true,
-                attributes: ['recipeID', 'dietID']
+                attributes: ['recipeID', 'dietID'],
+                include: [
+                    {
+                        model: Recipe,
+                        attributes: ['name'] // Include the recipe name
+                    }
+                ]
             }
             
 
