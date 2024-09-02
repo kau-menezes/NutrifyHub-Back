@@ -25,10 +25,11 @@ export async function insertRecipe(req, res) {
         });
     }));
 
-    await Promise.all(req.body.steps.map(async (step) => {
-        await RecipeStepss
+    await Promise.all(req.body.steps.map(async (step, index) => {
+        await RecipeSteps
         .create({
-            name: step.description,
+            description: step.description,
+            stepNumber: (index + 1),
             recipeID: recipe.recipeID
         });
     }));
