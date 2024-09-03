@@ -31,6 +31,8 @@ export async function insertPacient(req, res) {
 
 export async function insertDiet(req, res) {
 
+    console.log("\n\n\n\n\n\n\n\n", req.body, "\n\n\n\n\n\n\n\n");
+
     const diet = await Diet.create({
         totalCalories: req.body.calories, 
         waterIntake: req.body.water,
@@ -118,9 +120,13 @@ export async function updateNutri (req, res) {
     res.status(200).json({ ...user.toJSON(), password: undefined });
 }
 
-export const deleteNutri = async (req, res) => {
+export const deletePacient = async (req, res) => {
 
-    const user = await User.findByPk(req.params.id);
+    
+    console.log(req.params.userID);
+    
+    const user = await User.findByPk(req.params.userID);
+    console.log(user);
 
     await user.destroy();
 

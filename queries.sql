@@ -10,7 +10,7 @@ select * from Diets;
 select * from Recipes;
 select * from RecipeIngredients;
 select * from RecipeSteps;
-select * from BaseRecipes;
+select * from DietRecipes;
 
 drop table Users;
 drop table Pacients;
@@ -19,4 +19,4 @@ drop table Diets;
 drop table Recipes;
 drop table RecipeIngredients;
 drop table RecipeSteps;
-drop table BaseRecipes;
+drop table DietRecipes;

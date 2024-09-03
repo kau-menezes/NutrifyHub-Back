@@ -57,7 +57,7 @@ Diet.hasOne(Pacient, {
 });
 
 Nutricionist.hasMany(Diet, {
-    foreignKey: {
+    foreignKey: { 
         name: 'nutricionistID',
         allowNull: true,
     },
