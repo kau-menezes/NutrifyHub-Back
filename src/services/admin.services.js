@@ -76,6 +76,10 @@ export async function updateNutri (req, res) {
     if (req.body.password) {
         req.body.password = crypt.hashSync(req.body.password)
     }
+
+    console.log(req.body);
+    
+
     // método do próprio sequelize para atualizar os campos
     user.update(req.body);
 

@@ -104,20 +104,21 @@ export async function getNutriByID(req, res) {
 
 }
 
-export async function updateNutri (req, res) {
+export async function updateDiet (req, res) {
 
     // encontrando o user pelo id que deve ser passado na url
-    const user = await User.findByPk(req.params.id);
+    const diet = await Diet.findByPk(req.params.dietID);
 
-    if (req.body.password) {
-        req.body.password = crypt.hashSync(req.body.password)
-    }
+    console.log("\n\n\n\n\n", req.body);
+    console.log("\n\n\n\n\n", diet);
+    
+
     // método do próprio sequelize para atualizar os campos
-    user.update(req.body);
+    diet.update(req.body.dataValues);
 
     // devolvendo o usuário atualizado para o frontend com o status code mais adequado
     // 200 OK 
-    res.status(200).json({ ...user.toJSON(), password: undefined });
+    res.status(200).json(diet.toJSON());
 }
 
 export const deletePacient = async (req, res) => {
