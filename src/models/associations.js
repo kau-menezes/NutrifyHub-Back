@@ -105,6 +105,16 @@ Pacient.hasMany(Calendar, {
     onDelete: 'SET NULL', // This specifies what happens when the related patient is deleted
   });
   
-  Calendar.belongsTo(Pacient, {
+Calendar.belongsTo(Pacient, {
+
     foreignKey: 'pacientID', // Ensure the foreign key name matches the one in the Calendar model
-  });
+});
+
+Recipe.hasMany(Calendar, {
+
+    foreignKey: {
+        name: 'recipeID', // Ensure the foreign key name matches the one in the Calendar model
+        allowNull: true, // Should be true to match the model's setting
+    },
+    onDelete: 'SET NULL', // This specifies what happens when the related patient is deleted
+});

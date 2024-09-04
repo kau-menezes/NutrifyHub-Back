@@ -1,7 +1,10 @@
 import dayjs from 'dayjs';
+import isoWeek from 'dayjs/plugin/isoWeek.js'
 import customParseFormat from 'dayjs/plugin/customParseFormat.js';
+import { Sequelize } from "sequelize";
 
 dayjs.extend(customParseFormat);
+dayjs.extend(isoWeek);
 
 
 import Calendar from "../models/calendar.model.js";
@@ -99,7 +102,6 @@ export async function insertPlanning(req, res) {
                 }
 
                 promises.push(Calendar.create({
-                    week, 
                     day: parsedDate.toDate(), // Ensure day is included
                     period, 
                     recipeID, 
@@ -113,9 +115,81 @@ export async function insertPlanning(req, res) {
         res.status(200).json({ message: 'Recipes successfully inserted into the calendar.' });
         
     } catch (error) {
-        
+
         res.status(500).json({ error: error.message });
     }
 
 
+}
+
+export async function getPlanning(req, res) {
+
+    // const planning = await Calendar.findAll({ 
+    //     where: { week: req.params.week }, 
+    //     attributes: ['day', 'recipeID']
+
+    // if (planning.length == 0) {
+    //     res.status(204).json({message: "No planned meals for this week"} )
+    // }
+
+    // const planningData = planning.map(plannedDay => plannedDay.toJSON());
+
+    // const updatedPlannedRecipes = await Promise.all(planningData.map(async ( plannedDay ) => {
+    //     const recipe = await Recipe.findByPk(plannedDay.recipeID, {
+    //         attributes: ['name'] 
+    //     });
+        
+    //     return {
+    //         ...plannedDay,
+    //         name: recipe ? recipe.name : 'Not found'
+    //     };
+    // }));
+
+    const planning = await Calendar.findAll({
+        attributes: [
+            'day',
+            'recipeID'
+        ],
+        where: { week: req.params.week },
+        group: ['day', 'recipeID'] // Groups by day and recipeID
+    });
+    
+    if (planning.length === 0) {
+        return res.status(204).json({ message: "No planned meals for this week" });
+    }
+    
+    // Convert planning to a plain JSON object
+    const planningData = planning.map(plannedDay => plannedDay.toJSON());
+    
+    // Create a map to group recipes by day
+    const groupedByDay = planningData.reduce((acc, curr) => {
+        const { day, recipeID, count } = curr;
+        if (!acc[day]) {
+            acc[day] = [];
+        }
+        acc[day].push({ recipeID, count });
+        return acc;
+    }, {});
+    
+    // Fetch recipe names and update grouped data
+    const updatedPlannedRecipes = await Promise.all(Object.keys(groupedByDay).map(async (day) => {
+        const recipes = await Promise.all(groupedByDay[day].map(async ({ recipeID, count }) => {
+            const recipe = await Recipe.findByPk(recipeID, {
+                attributes: ['name']
+            });
+            return {
+                recipeID,
+                name: recipe ? recipe.name : 'Not found',
+                count
+            };
+        }));
+    
+        return {
+            day,
+            recipes
+        };
+    }));
+    
+    res.status(200).json(updatedPlannedRecipes);
+    
 }
