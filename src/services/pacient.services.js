@@ -1,8 +1,9 @@
 import Diet from "../models/diet.model.js";
 import dietRecipe from "../models/dietRecipe.model.js";
 import Pacient from "../models/pacient.model.js";
+import Planner from "../models/planner.model.js";
 import Recipe from "../models/recipe.model.js";
-import User from "../models/user.model.js";
+import plannerDays from "../models/plannerDays.model.js"
 
 export async function getDiet(req, res) {
 
@@ -52,4 +53,30 @@ export async function getDiet(req, res) {
         console.error('Error fetching diet and recipes:', error);
         res.status(500).json({ message: 'Internal Server Error' });
     }
+}
+
+export async function insertPlanning(req, res) {
+
+    if (!Planner.findOne({where: {startOfWeek: req.body.startOfWeek}})) {
+        const newPlanner = await Planner.create({
+            startOfWeek: req.body.startOfWeek,
+            pacientID: req.params.pacientID
+        })
+    }
+
+    const planningPromises = [];
+
+    for (const [day, periods] of Object.entries(req.body.planning)) {
+        for (const [period, recipeID] of Object.entries(periods)) {
+            planningPromises.push(
+                PlannerDays.create({
+                    dayOfWeek: day,
+                    period: period,
+                    recipeID: recipeID,
+                    plannerID: planner.plannerID
+                })
+            );
+        }
+    }
+
 }

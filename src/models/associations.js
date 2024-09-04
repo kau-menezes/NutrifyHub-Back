@@ -6,6 +6,8 @@ import RecipeSteps from "./steps.model.js";
 import User from "./user.model.js";
 import Recipe from "./recipe.model.js";
 import DietRecipe from "./dietRecipe.model.js";
+import Planner from "./planner.model.js";
+import PlannerDays from "./plannerDays.model.js";
 
 
 User.hasOne(Pacient, {
@@ -94,4 +96,28 @@ Recipe.hasMany(DietRecipe, {
         allowNull: true,
     },
     onDelete: 'set null'   
+})
+
+User.hasOne(Planner, {
+    foreignKey: {
+        name: 'userID',
+        allowNull: true,
+    },
+    onDelete: 'set null' 
+})
+
+Planner.hasMany(PlannerDays, {
+    foreignKey: {
+        name: 'plannerID',
+        allowNull: true,
+    },
+    onDelete: 'set null' 
+})
+
+Recipe.hasMany(PlannerDays, {
+    foreignKey: {
+        name: 'recipeID',
+        allowNull: true,
+    },
+    onDelete: 'set null' 
 })
