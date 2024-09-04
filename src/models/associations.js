@@ -6,8 +6,7 @@ import RecipeSteps from "./steps.model.js";
 import User from "./user.model.js";
 import Recipe from "./recipe.model.js";
 import DietRecipe from "./dietRecipe.model.js";
-import Planner from "./planner.model.js";
-import PlannerDays from "./plannerDays.model.js";
+import Calendar from "./calendar.model.js";
 
 
 User.hasOne(Pacient, {
@@ -98,26 +97,14 @@ Recipe.hasMany(DietRecipe, {
     onDelete: 'set null'   
 })
 
-User.hasOne(Planner, {
+Pacient.hasMany(Calendar, {
     foreignKey: {
-        name: 'userID',
-        allowNull: true,
+      name: 'pacientID', // Ensure the foreign key name matches the one in the Calendar model
+      allowNull: true, // Should be true to match the model's setting
     },
-    onDelete: 'set null' 
-})
-
-Planner.hasMany(PlannerDays, {
-    foreignKey: {
-        name: 'plannerID',
-        allowNull: true,
-    },
-    onDelete: 'set null' 
-})
-
-Recipe.hasMany(PlannerDays, {
-    foreignKey: {
-        name: 'recipeID',
-        allowNull: true,
-    },
-    onDelete: 'set null' 
-})
+    onDelete: 'SET NULL', // This specifies what happens when the related patient is deleted
+  });
+  
+  Calendar.belongsTo(Pacient, {
+    foreignKey: 'pacientID', // Ensure the foreign key name matches the one in the Calendar model
+  });

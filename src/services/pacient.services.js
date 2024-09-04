@@ -1,9 +1,16 @@
+import dayjs from 'dayjs';
+import customParseFormat from 'dayjs/plugin/customParseFormat.js';
+
+dayjs.extend(customParseFormat);
+
+
+import Calendar from "../models/calendar.model.js";
 import Diet from "../models/diet.model.js";
 import dietRecipe from "../models/dietRecipe.model.js";
 import Pacient from "../models/pacient.model.js";
-import Planner from "../models/planner.model.js";
 import Recipe from "../models/recipe.model.js";
-import plannerDays from "../models/plannerDays.model.js"
+import AppError from '../AppError.js';
+
 
 export async function getDiet(req, res) {
 
@@ -57,26 +64,58 @@ export async function getDiet(req, res) {
 
 export async function insertPlanning(req, res) {
 
-    if (!Planner.findOne({where: {startOfWeek: req.body.startOfWeek}})) {
-        const newPlanner = await Planner.create({
-            startOfWeek: req.body.startOfWeek,
-            pacientID: req.params.pacientID
-        })
-    }
+    try {
+        const { week, entries } = req.body;
 
-    const planningPromises = [];
-
-    for (const [day, periods] of Object.entries(req.body.planning)) {
-        for (const [period, recipeID] of Object.entries(periods)) {
-            planningPromises.push(
-                PlannerDays.create({
-                    dayOfWeek: day,
-                    period: period,
-                    recipeID: recipeID,
-                    plannerID: planner.plannerID
-                })
-            );
+        // Validate request body
+        if (!week || !entries || !Array.isArray(entries)) {
+            return new AppError("Bad Request: missing parameters", 400)
         }
+
+        // Use a promise-based approach to handle async operations
+        const promises = [];
+
+        for (const day of entries) {
+            const { date, recipes } = day;
+
+            // Debugging: Check the raw date value
+            console.log('Received date:', date);
+
+            // Ensure date is provided and not undefined
+            if (!date) {
+                return new AppError("Bad Request: missing date entry somewhere", 400)
+
+            }
+
+            // Parse and validate the date
+            const parsedDate = dayjs(date, 'DD/MM/YYYY', true);
+
+            for (const recipe of recipes || []) {
+
+                const { period, recipeID } = recipe;
+
+                if (!period || !recipeID) {
+                    return new AppError("Bad Request: missing recipe or period for this date", 400)
+                }
+
+                promises.push(Calendar.create({
+                    week, 
+                    day: parsedDate.toDate(), // Ensure day is included
+                    period, 
+                    recipeID, 
+                    pacientID: req.params.pacientID
+                }));
+            }
+        }
+
+        await Promise.all(promises);
+
+        res.status(200).json({ message: 'Recipes successfully inserted into the calendar.' });
+        
+    } catch (error) {
+        
+        res.status(500).json({ error: error.message });
     }
+
 
 }

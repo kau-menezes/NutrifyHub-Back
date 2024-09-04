@@ -8,6 +8,8 @@ import User from "../models/user.model.js";
 import crypt from "bcryptjs"
 
 export async function insertPacient(req, res) {
+    
+    console.log('OIOIOIOOIOIIOIOIOIIIIOIIOIO');
 
     const password = crypt.hashSync(req.body.password);
 
@@ -31,6 +33,8 @@ export async function insertPacient(req, res) {
 
 export async function insertDiet(req, res) {
 
+    console.log('OIOIOIOOIOIIOIOIOIIIIOIIOIO');
+    
     console.log("\n\n\n\n\n\n\n\n", req.body, "\n\n\n\n\n\n\n\n");
 
     const diet = await Diet.create({
