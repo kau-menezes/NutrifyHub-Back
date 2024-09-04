@@ -15,6 +15,11 @@ const Recipe = db.define(
             allowNull: true
         },
 
+        description: {
+            type: DataTypes.STRING(50),
+            allowNull: true
+        },
+
         
     }
 );

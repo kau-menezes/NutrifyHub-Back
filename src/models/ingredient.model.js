@@ -19,6 +19,11 @@ const RecipeIngredient = db.define(
         quantity: {
             type: DataTypes.FLOAT,
             allowNull: false           
+        },
+
+        measureSystem: {
+            type: DataTypes.STRING(5),
+            allowNull: false  
         }
     }
 );

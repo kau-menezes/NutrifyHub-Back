@@ -21,6 +21,7 @@ export async function insertRecipe(req, res) {
         await RecipeIngredient.create({
             name: ingredient.name,
             quantity: ingredient.quantity,
+            measureSystem: ingredient.measure,
             recipeID: recipe.recipeID
         });
     }));
