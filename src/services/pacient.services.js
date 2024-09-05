@@ -162,7 +162,7 @@ export async function getPlanning(req, res) {
     });
     
     if (planning.length === 0) {
-        return res.status(204).json({ message: "No planned meals for this week" });
+        return res.status(200).json({ weekRecipes: [], week: req.params.week });
     }
     
     // Convert planning to a plain JSON object
@@ -207,7 +207,7 @@ export async function getPlanning(req, res) {
         };
     }));
     
-    res.status(200).json(updatedPlannedRecipes);
+    res.status(200).json({weekRecipes: updatedPlannedRecipes, week: req.params.week});
     
     
 }
