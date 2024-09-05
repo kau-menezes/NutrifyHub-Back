@@ -151,6 +151,17 @@ export async function getPlanning(req, res) {
     //     };
     // }));
 
+    const startOfYear = dayjs().year(req.params.year).startOf('year');
+
+    // Calculate the start date of the specified week
+    const startOfWeek = startOfYear.isoWeek(req.params.week).startOf('isoWeek');
+    
+    // Create an array of dates for the week
+    const weekDates = [];
+    for (let i = 0; i < 7; i++) {
+        weekDates.push(startOfWeek.add(i, 'day').format('YYYY-MM-DD'));
+    }
+
     const planning = await Calendar.findAll({
         attributes: [
             'day',
@@ -162,6 +173,9 @@ export async function getPlanning(req, res) {
     });
     
     if (planning.length === 0) {
+
+
+
         return res.status(200).json({ weekRecipes: [], week: req.params.week });
     }
     

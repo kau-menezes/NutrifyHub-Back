@@ -15,7 +15,7 @@ import "./models/associations.js";
 
 
 async function startApp() {
-    await db.sync( {alter: true} );
+    await db.sync( );
 
     const PORT = Number(process.env.APP_PORT) || 3000;
 
