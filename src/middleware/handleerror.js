@@ -1,4 +1,4 @@
-import AppError from "../AppError";
+import AppError from "../AppError.js";
 
 export async function handleError(error, req, res, next) {
 
@@ -8,6 +8,7 @@ export async function handleError(error, req, res, next) {
         })
     }
 
+    console.error(error)
     return res.status(500).json({
         message: "Server Internal Error nem a gente sabe oq rolou"
     })
