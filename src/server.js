@@ -2,6 +2,7 @@ import "dotenv/config";
 
 import app from "./app.js";
 import db from "./db.js";
+import fs from "fs"
 
 import "./models/user.model.js";
 import "./models/recipe.model.js";
@@ -15,6 +16,11 @@ import "./models/associations.js";
 
 
 async function startApp() {
+
+    if (!fs.existsSync("uploads")) {
+        fs.mkdirSync("uploads");
+    }
+
     await db.sync();
 
     const PORT = Number(process.env.APP_PORT) || 3000;
