@@ -118,10 +118,29 @@ export async function updateDiet (req, res) {
     
 
     // método do próprio sequelize para atualizar os campos
-    diet.update(req.body.dataValues);
+    diet.update({
+        totalCalories: req.body.calories, 
+        waterIntake: req.body.water,
+        protein: req.body.protein,
+        carbs: req.body.carbs,
+        fat: req.body.fat,
+        
+    });
 
-    // devolvendo o usuário atualizado para o frontend com o status code mais adequado
-    // 200 OK 
+    await dietRecipe.destroy({
+        where: {
+          dietID: req.params.dietID,
+        },
+      });
+
+    req.body.recipes.forEach( async (recipe) => {
+        await dietRecipe.create({
+            period: recipe.period,
+            dietID: diet.dietID,
+            recipeID: recipe.recipeID
+        })
+    });
+
     res.status(200).json(diet.toJSON());
 }
 
