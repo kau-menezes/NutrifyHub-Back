@@ -67,6 +67,8 @@ export async function getDiet(req, res) {
 
 export async function insertPlanning(req, res) {
 
+    console.log(req.body)
+
     try {
         const { week, entries } = req.body;
 
@@ -93,6 +95,9 @@ export async function insertPlanning(req, res) {
             // Parse and validate the date
             const parsedDate = dayjs(date, 'DD/MM/YYYY', true);
 
+            console.log(parsedDate);
+            
+
             for (const recipe of recipes || []) {
 
                 const { period, recipeID } = recipe;
@@ -101,12 +106,13 @@ export async function insertPlanning(req, res) {
                     return new AppError("Bad Request: missing recipe or period for this date", 400)
                 }
 
-                promises.push(Calendar.create({
-                    day: parsedDate.toDate(), // Ensure day is included
-                    period, 
-                    recipeID, 
-                    pacientID: req.params.pacientID
-                }));
+                    promises.push(Calendar.create({
+                        day: parsedDate.toDate(), // Ensure day is included
+                        week: req.body.week,
+                        period, 
+                        recipeID, 
+                        pacientID: req.params.pacientID
+                    }));
             }
         }
 
@@ -145,51 +151,77 @@ export async function getPlanning(req, res) {
     //     };
     // }));
 
+    const startOfYear = dayjs().year(req.params.year).startOf('year');
+
+    // Calculate the start date of the specified week
+    const startOfWeek = startOfYear.isoWeek(req.params.week).startOf('isoWeek');
+    
+    // Create an array of dates for the week
+    const weekDates = [];
+    for (let i = 0; i < 7; i++) {
+        weekDates.push(startOfWeek.add(i, 'day').format('YYYY-MM-DD'));
+    }
+
     const planning = await Calendar.findAll({
         attributes: [
             'day',
-            'recipeID'
+            'recipeID',
+            'period'
         ],
         where: { week: req.params.week },
-        group: ['day', 'recipeID'] // Groups by day and recipeID
+        group: ['day', 'recipeID', 'period'] // Group by day, recipeID, and period
     });
     
     if (planning.length === 0) {
-        return res.status(204).json({ message: "No planned meals for this week" });
+
+
+
+        return res.status(200).json({ weekRecipes: [], week: req.params.week });
     }
     
     // Convert planning to a plain JSON object
     const planningData = planning.map(plannedDay => plannedDay.toJSON());
     
-    // Create a map to group recipes by day
-    const groupedByDay = planningData.reduce((acc, curr) => {
-        const { day, recipeID, count } = curr;
+    // Create a map to group recipes by day and period
+    const groupedByDayAndPeriod = planningData.reduce((acc, curr) => {
+        const { day, recipeID, period } = curr;
         if (!acc[day]) {
-            acc[day] = [];
+            acc[day] = {};
         }
-        acc[day].push({ recipeID, count });
+        if (!acc[day][period]) {
+            acc[day][period] = [];
+        }
+        acc[day][period].push({ recipeID });
         return acc;
     }, {});
     
     // Fetch recipe names and update grouped data
-    const updatedPlannedRecipes = await Promise.all(Object.keys(groupedByDay).map(async (day) => {
-        const recipes = await Promise.all(groupedByDay[day].map(async ({ recipeID, count }) => {
-            const recipe = await Recipe.findByPk(recipeID, {
-                attributes: ['name']
-            });
+    const updatedPlannedRecipes = await Promise.all(Object.keys(groupedByDayAndPeriod).map(async (day) => {
+        const periods = groupedByDayAndPeriod[day];
+        const recipesByPeriod = await Promise.all(Object.keys(periods).map(async (period) => {
+            const recipes = await Promise.all(periods[period].map(async ({ recipeID }) => {
+                const recipe = await Recipe.findByPk(recipeID, {
+                    attributes: ['name']
+                });
+                return {
+                    recipeID,
+                    name: recipe ? recipe.name : 'Not found'
+                };
+            }));
+    
             return {
-                recipeID,
-                name: recipe ? recipe.name : 'Not found',
-                count
+                period,
+                recipes
             };
         }));
     
         return {
             day,
-            recipes
+            periods: recipesByPeriod
         };
     }));
     
-    res.status(200).json(updatedPlannedRecipes);
+    res.status(200).json({weekRecipes: updatedPlannedRecipes, week: req.params.week});
+    
     
 }

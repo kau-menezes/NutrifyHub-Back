@@ -4,7 +4,7 @@ import { getDiet, getPlanning, insertPlanning } from "../services/pacient.servic
 const pacientRouter = Router();
 
 pacientRouter.get("/:pacientID/dieta", getDiet)
-pacientRouter.get("/:pacientID/planejamento", insertPlanning )
+pacientRouter.post("/:pacientID/planejamento", insertPlanning )
 pacientRouter.get("/:pacientID/ver-planejamento/:week/:year", getPlanning )
 
 export default pacientRouter;
