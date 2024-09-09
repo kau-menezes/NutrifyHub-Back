@@ -43,12 +43,13 @@ export async function getDiet(req, res) {
 
         const updatedDietRecipes = await Promise.all(diet.DietRecipes.map(async (dietRecipe) => {
             const recipe = await Recipe.findByPk(dietRecipe.dataValues.recipeID, {
-                attributes: ['name'] // Only include the 'name' attribute
+                attributes: ['name', 'picture'] // Only include the 'name' attribute
             });
             
             return {
                 ...dietRecipe.dataValues,
-                name: recipe ? recipe.dataValues.name : 'Not found'
+                name: recipe ? recipe.dataValues.name : 'Not found',
+                picture: recipe ? recipe.dataValues.picture : 'Not found',
             };
         }));
 
