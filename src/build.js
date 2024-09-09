@@ -35,7 +35,8 @@ async function build() {
         name: "Neusa Saladino",
         email: "neusa@mail.com",
         password: password1,
-        userType: 1
+        userType: 1,
+        profilePicture: "20240601_125524.jpg"
     });
     
     await Nutricionist.create({
@@ -51,7 +52,8 @@ async function build() {
         name: "Adriana Menezes",
         email: "adri@mail.com",
         password: password2,
-        userType: 1
+        userType: 1,
+        profilePicture: "20240908_104746.jpg"
     });
 
     await Nutricionist.create({
