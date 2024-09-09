@@ -131,26 +131,6 @@ export async function insertPlanning(req, res) {
 
 export async function getPlanning(req, res) {
 
-    // const planning = await Calendar.findAll({ 
-    //     where: { week: req.params.week }, 
-    //     attributes: ['day', 'recipeID']
-
-    // if (planning.length == 0) {
-    //     res.status(204).json({message: "No planned meals for this week"} )
-    // }
-
-    // const planningData = planning.map(plannedDay => plannedDay.toJSON());
-
-    // const updatedPlannedRecipes = await Promise.all(planningData.map(async ( plannedDay ) => {
-    //     const recipe = await Recipe.findByPk(plannedDay.recipeID, {
-    //         attributes: ['name'] 
-    //     });
-        
-    //     return {
-    //         ...plannedDay,
-    //         name: recipe ? recipe.name : 'Not found'
-    //     };
-    // }));
 
     const startOfYear = dayjs().year(req.params.year).startOf('year');
 
@@ -225,4 +205,65 @@ export async function getPlanning(req, res) {
     res.status(200).json({weekRecipes: updatedPlannedRecipes, week: req.params.week});
     
     
+}
+
+export async function updatePlanning() {
+
+    await Calendar.destroy( {where: { week: req.body.week}})
+
+    try {
+        const { week, entries } = req.body;
+
+        // Validate request body
+        if (!week || !entries || !Array.isArray(entries)) {
+            return new AppError("Bad Request: missing parameters", 400)
+        }
+
+        // Use a promise-based approach to handle async operations
+        const promises = [];
+
+        for (const day of entries) {
+            const { date, recipes } = day;
+
+            // Debugging: Check the raw date value
+            console.log('Received date:', date);
+
+            // Ensure date is provided and not undefined
+            if (!date) {
+                return new AppError("Bad Request: missing date entry somewhere", 400)
+
+            }
+
+            // Parse and validate the date
+            const parsedDate = dayjs(date, 'DD/MM/YYYY', true);
+
+            console.log(parsedDate);
+            
+
+            for (const recipe of recipes || []) {
+
+                const { period, recipeID } = recipe;
+
+                if (!period || !recipeID) {
+                    return new AppError("Bad Request: missing recipe or period for this date", 400)
+                }
+
+                    promises.push(Calendar.create({
+                        day: parsedDate.toDate(), // Ensure day is included
+                        week: req.body.week,
+                        period, 
+                        recipeID, 
+                        pacientID: req.params.pacientID
+                    }));
+            }
+        }
+
+        await Promise.all(promises);
+
+        res.status(200).json({ message: 'Recipes successfully inserted into the calendar.' });
+        
+    } catch (error) {
+
+        res.status(500).json({ error: error.message });
+    }
 }
