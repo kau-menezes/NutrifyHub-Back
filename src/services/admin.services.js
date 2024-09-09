@@ -12,7 +12,9 @@ export async function insertNutri(req, res) {
         name: req.body.name, 
         email: req.body.email,
         password: password,
-        userType: 1
+        userType: 1,
+        profilePicture: req.body.picture
+
     });
 
     const nutri = await Nutricionist.create({

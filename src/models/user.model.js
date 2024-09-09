@@ -25,6 +25,11 @@ const User = db.define(
             allowNull: false
         },
 
+        profilePicture: {
+            type: DataTypes.STRING(255),
+            allowNull: true
+        },
+
         userType: {
             type: DataTypes.INTEGER,
             allowNull: false

@@ -14,8 +14,12 @@ export async function insertRecipe(req, res) {
 
     const recipe = await Recipe.create({
         name: req.body.name,
-        userID: user.userID
+        userID: user.userID,
+        picture: req.body.picture
+
     });
+
+    console.log("\n\n\n\n\n", req.body.picture, "\n\n\n\n\n");
 
     await Promise.all(req.body.ingredients.map(async (ingredient) => {
         await RecipeIngredient.create({
@@ -35,6 +39,7 @@ export async function insertRecipe(req, res) {
         });
     }));
 
+    console.log("\n\n\n\n\n", recipe);
     
     if (recipe) return res.status(200).json(recipe);
 }
@@ -53,7 +58,7 @@ export async function getRecipes(req, res) {
             }
 
         ],
-        attributes: ['name', 'recipeID'],
+        attributes: ['name', 'recipeID','picture'],
         where: { userID: req.params.userID }
 
     }); 

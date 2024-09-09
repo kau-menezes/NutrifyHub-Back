@@ -13,11 +13,14 @@ export async function insertPacient(req, res) {
 
     const password = crypt.hashSync(req.body.password);
 
+    console.log("\n\n\n\n\n", req.body.profilePicture, "\n\n\n\n\n");
+
     const user = await User.create({
         name: req.body.name, 
         email: req.body.email,
         password: password,
-        userType: 2
+        userType: 2,
+        profilePicture: req.body.profilePicture
     });
     
     const pacient = await Pacient.create({
