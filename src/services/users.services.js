@@ -78,7 +78,7 @@ export async function getRecipe(req, res) {
             },
             {
                 model: RecipeIngredient,
-                attributes: ['quantity', 'name']
+                attributes: ['quantity', 'name', 'measureSystem']
             }
 
         ],
