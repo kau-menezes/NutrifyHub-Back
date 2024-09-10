@@ -124,8 +124,6 @@ export async function updateInfo (req, res) {
     }
     
     
-
-    
     user.update(req.body);
 
     res.status(200).json({ ...user.toJSON(), password: undefined });

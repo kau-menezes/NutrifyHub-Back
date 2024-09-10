@@ -6,8 +6,8 @@ const nutriRouter = Router()
 
 nutriRouter.get("/:nutriID/pacientes", validateToken, getPacient);
 nutriRouter.post("/:nutriID/cadastrar-paciente", validateToken, insertPacient);
-nutriRouter.post("/:nutriID/criar-dieta/:pacientID", insertDiet);
-nutriRouter.delete("/delete/:userID", deletePacient);
-nutriRouter.patch("/updateDiet/:pacientID", updateDiet);
+nutriRouter.post("/:nutriID/criar-dieta/:pacientID", validateToken, insertDiet);
+nutriRouter.delete("/delete/:userID", validateToken, deletePacient);
+nutriRouter.patch("/updateDiet/:pacientID", validateToken, updateDiet);
 
 export default nutriRouter;

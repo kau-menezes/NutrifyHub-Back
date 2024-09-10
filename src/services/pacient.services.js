@@ -1,7 +1,8 @@
 import dayjs from 'dayjs';
 import isoWeek from 'dayjs/plugin/isoWeek.js'
 import customParseFormat from 'dayjs/plugin/customParseFormat.js';
-import { Sequelize } from "sequelize";
+import { Op, QueryInterface } from 'sequelize';
+import Sequelize from 'sequelize';
 
 dayjs.extend(customParseFormat);
 dayjs.extend(isoWeek);
@@ -13,6 +14,7 @@ import dietRecipe from "../models/dietRecipe.model.js";
 import Pacient from "../models/pacient.model.js";
 import Recipe from "../models/recipe.model.js";
 import AppError from '../AppError.js';
+import RecipeIngredient from '../models/ingredient.model.js';
 
 
 export async function getDiet(req, res) {
@@ -265,5 +267,84 @@ export async function updatePlanning(req, res) {
     } catch (error) {
 
         res.status(500).json({ error: error.message });
+    }
+}
+
+// ESSA
+// export async function shoppingList(req, res) {
+//     console.log(req.body.week);
+
+//     try {
+//         // Fetch the calendar entries for the given week
+//         const calendarEntries = await Calendar.findAll({
+//             where: { week: req.body.week },
+//             attributes: ['day', 'recipeID']
+//         });
+
+//         // Collect all recipe IDs
+//         const recipeIDs = calendarEntries.map(entry => entry.recipeID);
+
+//         // Fetch all ingredients for the collected recipe IDs
+//         const ingredients = await RecipeIngredient.findAll({
+//             where: { recipeID: recipeIDs },
+//             attributes: ['recipeID', 'name', 'quantity', 'measureSystem']
+//         });
+
+//         // Organize ingredients by recipe ID
+//         const ingredientMap = ingredients.reduce((map, ingredient) => {
+//             if (!map[ingredient.recipeID]) {
+//                 map[ingredient.recipeID] = [];
+//             }
+//             map[ingredient.recipeID].push(ingredient);
+//             return map;
+//         }, {});
+
+//         // Combine calendar entries with their ingredients
+//         const listinha = calendarEntries.map(entry => {
+//             const recipeIngredients = ingredientMap[entry.recipeID] || [];
+//             return {
+//                 day: entry.day,
+//                 recipeID: entry.recipeID,
+//                 ingredients: recipeIngredients
+//             };
+//         });
+
+//         // Send the response
+//         res.status(200).json({ recipes: listinha });
+//     } catch (error) {
+//         console.error('Error fetching shopping list:', error);
+//         res.status(500).json({ message: 'An error occurred while fetching the shopping list.' });
+//     }
+// }
+
+export async function shoppingList(req, res) {
+    console.log(req.body.week);
+
+    try {
+        // Fetch the calendar entries for the given week
+        const calendarEntries = await Calendar.findAll({
+            where: { week: req.body.week },
+            attributes: ['day', 'recipeID']
+        });
+
+        // Collect all recipe IDs and remove duplicates
+        const recipeIDs = Array.from(new Set(calendarEntries.map(entry => entry.recipeID)));
+
+        // Fetch all ingredients for the collected recipe IDs
+        const ingredients = await RecipeIngredient.findAll({
+            where: {
+                recipeID: {
+                    [Op.in]: recipeIDs // Use Op.in to match any of the recipe IDs
+                }
+            },
+            attributes: ['name',[Sequelize.fn("SUM", Sequelize.col("quantity")), 'quantity'], 'measureSystem'],
+            group: ['name', 'measureSystem']
+        });
+
+
+        res.status(200).json({ recipes: ingredients });
+    } catch (error) {
+        console.error('Error fetching shopping list:', error);
+        res.status(500).json({ message: 'An error occurred while fetching the shopping list.' });
     }
 }
