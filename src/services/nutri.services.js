@@ -113,38 +113,57 @@ export async function getNutriByID(req, res) {
 
 export async function updateDiet (req, res) {
 
-    // encontrando o user pelo id que deve ser passado na url
-    const diet = await Diet.findByPk(req.params.dietID);
+    try {
+        // Find patient by ID
+        const pacient = await Pacient.findByPk(req.params.pacientID);
+        if (!pacient) {
+            return res.status(404).json({ error: "Patient not found" });
+        }
 
-    console.log("\n\n\n\n\n", req.body);
-    console.log("\n\n\n\n\n", diet);
-    
+        console.log("\n\n\n\n", pacient);
+        console.log("\n\n\n\n", pacient.dietID);
 
-    // método do próprio sequelize para atualizar os campos
-    diet.update({
-        totalCalories: req.body.calories, 
-        waterIntake: req.body.water,
-        protein: req.body.protein,
-        carbs: req.body.carbs,
-        fat: req.body.fat,
-        
-    });
+        // Find diet by ID
+        const diet = await Diet.findByPk(pacient.dietID);
+        if (!diet) {
+            return res.status(404).json({ error: "Diet not found" });
+        }
 
-    await dietRecipe.destroy({
-        where: {
-          dietID: req.params.dietID,
-        },
-      });
+        console.log("\n\n\n\n\n", req.body);
+        console.log("\n\n\n\n\n", diet);
 
-    req.body.recipes.forEach( async (recipe) => {
-        await dietRecipe.create({
-            period: recipe.period,
-            dietID: diet.dietID,
-            recipeID: recipe.recipeID
-        })
-    });
+        // Update diet details
+        await diet.update({
+            totalCalories: req.body.calories, 
+            waterIntake: req.body.water,
+            protein: req.body.protein,
+            carbs: req.body.carbs,
+            fat: req.body.fat,
+        });
 
-    res.status(200).json(diet.toJSON());
+        // Clear existing diet recipes
+        await dietRecipe.destroy({
+            where: {
+                dietID: diet.dietID,
+            },
+        });
+
+        // Add new diet recipes
+        for (const recipe of req.body.recipes) {
+            await dietRecipe.create({
+                period: recipe.period,
+                dietID: diet.dietID,
+                recipeID: recipe.recipeID,
+            });
+        }
+
+        // Respond with the updated diet
+        res.status(200).json(diet.toJSON());
+
+    } catch (error) {
+        console.error("Error updating diet:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
 }
 
 export const deletePacient = async (req, res) => {

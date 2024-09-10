@@ -207,7 +207,7 @@ export async function getPlanning(req, res) {
     
 }
 
-export async function updatePlanning() {
+export async function updatePlanning(req, res) {
 
     await Calendar.destroy( {where: { week: req.body.week}})
 
@@ -260,7 +260,7 @@ export async function updatePlanning() {
 
         await Promise.all(promises);
 
-        res.status(200).json({ message: 'Recipes successfully inserted into the calendar.' });
+        res.status(200).json({ message: 'Recipes successfully updated into the calendar.' });
         
     } catch (error) {
 
