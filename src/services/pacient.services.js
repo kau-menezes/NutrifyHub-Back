@@ -271,52 +271,6 @@ export async function updatePlanning(req, res) {
 }
 
 // ESSA
-// export async function shoppingList(req, res) {
-//     console.log(req.body.week);
-
-//     try {
-//         // Fetch the calendar entries for the given week
-//         const calendarEntries = await Calendar.findAll({
-//             where: { week: req.body.week },
-//             attributes: ['day', 'recipeID']
-//         });
-
-//         // Collect all recipe IDs
-//         const recipeIDs = calendarEntries.map(entry => entry.recipeID);
-
-//         // Fetch all ingredients for the collected recipe IDs
-//         const ingredients = await RecipeIngredient.findAll({
-//             where: { recipeID: recipeIDs },
-//             attributes: ['recipeID', 'name', 'quantity', 'measureSystem']
-//         });
-
-//         // Organize ingredients by recipe ID
-//         const ingredientMap = ingredients.reduce((map, ingredient) => {
-//             if (!map[ingredient.recipeID]) {
-//                 map[ingredient.recipeID] = [];
-//             }
-//             map[ingredient.recipeID].push(ingredient);
-//             return map;
-//         }, {});
-
-//         // Combine calendar entries with their ingredients
-//         const listinha = calendarEntries.map(entry => {
-//             const recipeIngredients = ingredientMap[entry.recipeID] || [];
-//             return {
-//                 day: entry.day,
-//                 recipeID: entry.recipeID,
-//                 ingredients: recipeIngredients
-//             };
-//         });
-
-//         // Send the response
-//         res.status(200).json({ recipes: listinha });
-//     } catch (error) {
-//         console.error('Error fetching shopping list:', error);
-//         res.status(500).json({ message: 'An error occurred while fetching the shopping list.' });
-//     }
-// }
-
 export async function shoppingList(req, res) {
     console.log(req.body.week);
 
@@ -327,24 +281,107 @@ export async function shoppingList(req, res) {
             attributes: ['day', 'recipeID']
         });
 
-        // Collect all recipe IDs and remove duplicates
-        const recipeIDs = Array.from(new Set(calendarEntries.map(entry => entry.recipeID)));
+        // Collect all recipe IDs
+        const recipeIDs = calendarEntries.map(entry => entry.recipeID);
 
         // Fetch all ingredients for the collected recipe IDs
         const ingredients = await RecipeIngredient.findAll({
-            where: {
-                recipeID: {
-                    [Op.in]: recipeIDs // Use Op.in to match any of the recipe IDs
-                }
-            },
-            attributes: ['name',[Sequelize.fn("SUM", Sequelize.col("quantity")), 'quantity'], 'measureSystem'],
-            group: ['name', 'measureSystem']
+            where: { recipeID: recipeIDs },
+            attributes: ['recipeID', 'name', 'quantity', 'measureSystem']
         });
 
+        // Organize ingredients by recipe ID
+        const ingredientMap = ingredients.reduce((map, ingredient) => {
+            if (!map[ingredient.recipeID]) {
+                map[ingredient.recipeID] = [];
+            }
+            map[ingredient.recipeID].push(ingredient);
+            return map;
+        }, {});
 
-        res.status(200).json({ recipes: ingredients });
+        // Combine calendar entries with their ingredients
+        const listinha = calendarEntries.map(entry => {
+            const recipeIngredients = ingredientMap[entry.recipeID] || [];
+            return {
+                day: entry.day,
+                recipeID: entry.recipeID,
+                ingredients: recipeIngredients
+            };
+        });
+
+        function aggregateIngredients(recipes) {
+            const ingredientMap = {};
+        
+            // Iterate over each recipe entry
+            recipes.forEach(recipe => {
+                recipe.ingredients.forEach(ingredient => {
+                    const key = `${ingredient.name}-${ingredient.measureSystem}`;
+        
+                    // Initialize the entry if not already present
+                    if (!ingredientMap[key]) {
+                        ingredientMap[key] = {
+                            name: ingredient.name,
+                            measureSystem: ingredient.measureSystem,
+                            quantity: 0
+                        };
+                    }
+        
+                    // Sum the quantities
+                    ingredientMap[key].quantity += parseFloat(ingredient.quantity);
+                });
+            });
+        
+            // Convert the map to an array
+            const aggregatedIngredients = Object.values(ingredientMap);
+        
+            return aggregatedIngredients;
+        }
+
+        let data = { recipes: listinha}
+        
+        // Usage
+        const result = aggregateIngredients(data.recipes);
+        
+
+        // Send the response
+        res.status(200).json({ result });
     } catch (error) {
         console.error('Error fetching shopping list:', error);
         res.status(500).json({ message: 'An error occurred while fetching the shopping list.' });
     }
 }
+
+// export async function shoppingList(req, res) {
+//     console.log(req.body.week);
+
+//     try {
+//         // Fetch the calendar entries for the given week
+//         const calendarEntries = await Calendar.findAll({
+//             where: { 
+//                 week: req.body.week,
+//                 pacientID: req.params.pacientID
+//             },
+//             attributes: ['day', 'recipeID']
+//         });
+
+//         // Collect all recipe IDs and remove duplicates
+//         const recipeIDs = Array.from(new Set(calendarEntries.map(entry => entry.recipeID)));
+
+//         // Fetch all ingredients for the collected recipe IDs
+//         const list = await RecipeIngredient.findAll({
+//             where: {
+//                 recipeID: {
+//                     [Op.in]: recipeIDs // Use Op.in to match any of the recipe IDs
+//                 }
+//             },
+//             attributes: ['name',[Sequelize.fn("SUM", Sequelize.col("quantity")), 'quantity'], 'measureSystem'],
+//             group: ['name', 'measureSystem']
+//         });
+
+
+//         res.status(200).json({ list });
+//     } catch (error) {
+//         console.error('Error fetching shopping list:', error);
+//         res.status(500).json({ message: 'An error occurred while fetching the shopping list.' });
+//     }
+// }
