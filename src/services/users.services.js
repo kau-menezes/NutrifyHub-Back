@@ -108,7 +108,6 @@ export async function getInfo(req, res) {
 
 export async function updateInfo (req, res) {
 
-    // encontrando o user pelo id que deve ser passado na url
     console.log("OIOIOIO");
 
     console.log(req.body);

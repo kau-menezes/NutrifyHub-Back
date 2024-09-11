@@ -27,7 +27,7 @@ export async function insertNutri(req, res) {
         user.password = undefined;
         
         if (user) return res.status(200).json(user);
-        
+
     } else {
         throw new AppError("Forbidden", 403)
     }
@@ -79,7 +79,6 @@ export async function getNutriByID(req, res) {
 
 export async function updateNutri (req, res) {
 
-    // encontrando o user pelo id que deve ser passado na url
     const user = await User.findByPk(req.params.id);
 
     if (req.body.password) {
@@ -89,11 +88,9 @@ export async function updateNutri (req, res) {
     console.log(req.body);
     
 
-    // método do próprio sequelize para atualizar os campos
     user.update(req.body);
 
-    // devolvendo o usuário atualizado para o frontend com o status code mais adequado
-    // 200 OK 
+
     res.status(200).json({ ...user.toJSON(), password: undefined });
 }
 

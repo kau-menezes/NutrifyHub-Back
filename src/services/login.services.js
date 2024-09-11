@@ -16,8 +16,6 @@ export async function loginVerifyService(req, res) {
 
     if (!crypt.compareSync(req.body.password, user.password)) throw new AppError("Senha incorreta filhao", 401)
 
-    // console.log(user);
-    
     let userInfo;
 
     switch (user.userType) {

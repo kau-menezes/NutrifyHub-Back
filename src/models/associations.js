@@ -99,22 +99,22 @@ Recipe.hasMany(DietRecipe, {
 
 Pacient.hasMany(Calendar, {
     foreignKey: {
-      name: 'pacientID', // Ensure the foreign key name matches the one in the Calendar model
-      allowNull: true, // Should be true to match the model's setting
+      name: 'pacientID', 
+      allowNull: true, 
     },
-    onDelete: 'SET NULL', // This specifies what happens when the related patient is deleted
+    onDelete: 'SET NULL', 
   });
   
 Calendar.belongsTo(Pacient, {
 
-    foreignKey: 'pacientID', // Ensure the foreign key name matches the one in the Calendar model
+    foreignKey: 'pacientID', 
 });
 
 Recipe.hasMany(Calendar, {
 
     foreignKey: {
-        name: 'recipeID', // Ensure the foreign key name matches the one in the Calendar model
-        allowNull: true, // Should be true to match the model's setting
+        name: 'recipeID', 
+        allowNull: true, 
     },
-    onDelete: 'SET NULL', // This specifies what happens when the related patient is deleted
+    onDelete: 'SET NULL', 
 });
