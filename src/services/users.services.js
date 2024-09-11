@@ -16,7 +16,8 @@ export async function insertRecipe(req, res) {
     const recipe = await Recipe.create({
         name: req.body.name,
         userID: user.userID,
-        picture: req.body.picture
+        picture: req.body.picture,
+        description: req.body.description
 
     });
 
@@ -83,7 +84,7 @@ export async function getRecipe(req, res) {
 
         ],
         
-        attributes: ['name', 'recipeID', 'picture'],
+        attributes: ['name', 'recipeID', 'picture', 'description'],
         where: { recipeID: req.params.recipeID }
 
     }); 

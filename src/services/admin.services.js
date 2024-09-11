@@ -6,25 +6,32 @@ import crypt from "bcryptjs"
 
 export async function insertNutri(req, res) {
 
-    const password = crypt.hashSync(req.body.password);
+    if (res.locals.userType == 0) {
 
-    const user = await User.create({
-        name: req.body.name, 
-        email: req.body.email,
-        password: password,
-        userType: 1,
-        profilePicture: req.body.picture
-
-    });
-
-    const nutri = await Nutricionist.create({
-        userID: user.userID, 
-        CRN: req.body.CRN
-    });
-
-    user.password = undefined;
+        const password = crypt.hashSync(req.body.password);
     
-    if (user) return res.status(200).json(user);
+        const user = await User.create({
+            name: req.body.name, 
+            email: req.body.email,
+            password: password,
+            userType: 1,
+            profilePicture: req.body.picture
+    
+        });
+    
+        const nutri = await Nutricionist.create({
+            userID: user.userID, 
+            CRN: req.body.CRN
+        });
+    
+        user.password = undefined;
+        
+        if (user) return res.status(200).json(user);
+        
+    } else {
+        throw new AppError("Forbidden", 403)
+    }
+
 
 }
 
