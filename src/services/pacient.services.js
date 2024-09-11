@@ -151,14 +151,11 @@ export async function getPlanning(req, res) {
             'recipeID',
             'period'
         ],
-        where: { week: req.params.week },
+        where: { week: req.params.week, pacientID: req.params.pacientID},
         group: ['day', 'recipeID', 'period'] // Group by day, recipeID, and period
     });
     
     if (planning.length === 0) {
-
-
-
         return res.status(200).json({ weekRecipes: [], week: req.params.week });
     }
     
@@ -210,9 +207,7 @@ export async function getPlanning(req, res) {
 }
 
 export async function updatePlanning(req, res) {
-
-    await Calendar.destroy( {where: { week: req.body.week}})
-
+    
     try {
         const { week, entries } = req.body;
 
@@ -240,7 +235,8 @@ export async function updatePlanning(req, res) {
             const parsedDate = dayjs(date, 'DD/MM/YYYY', true);
 
             console.log(parsedDate);
-            
+
+            await Calendar.destroy( {where: { week: req.body.week, day: parsedDate.toDate()}})
 
             for (const recipe of recipes || []) {
 
@@ -262,7 +258,7 @@ export async function updatePlanning(req, res) {
 
         await Promise.all(promises);
 
-        res.status(200).json({ message: 'Recipes successfully updated into the calendar.' });
+        res.status(200).json({ message: 'Recipes successfully inserted into the calendar.' });
         
     } catch (error) {
 
@@ -272,23 +268,32 @@ export async function updatePlanning(req, res) {
 
 // ESSA
 export async function shoppingList(req, res) {
-    console.log(req.body.week);
+    console.log("\n\n\nOOOOOOOOOOOOOOOIOIIOI\n\n\n", req.body.week);
 
     try {
         // Fetch the calendar entries for the given week
         const calendarEntries = await Calendar.findAll({
-            where: { week: req.body.week },
+            where: { week: Number(req.body.week), pacientID: req.params.pacientID},
             attributes: ['day', 'recipeID']
         });
 
+        console.log(calendarEntries);
+        
+
         // Collect all recipe IDs
         const recipeIDs = calendarEntries.map(entry => entry.recipeID);
+
+        console.log(recipeIDs);
+        
 
         // Fetch all ingredients for the collected recipe IDs
         const ingredients = await RecipeIngredient.findAll({
             where: { recipeID: recipeIDs },
             attributes: ['recipeID', 'name', 'quantity', 'measureSystem']
         });
+
+        console.log(ingredients);
+        
 
         // Organize ingredients by recipe ID
         const ingredientMap = ingredients.reduce((map, ingredient) => {
